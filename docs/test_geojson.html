@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GeoJSON Test</title>
+</head>
+<body>
+    <h1>Testing GeoJSON File</h1>
+    <div id="status">Loading...</div>
+    <div id="result"></div>
+    <script>
+        fetch('bio_ton_data.geojson')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('status').innerHTML = 'Success! ✓';
+                document.getElementById('result').innerHTML = 
+                    '<p><strong>Type:</strong> ' + data.type + '</p>' +
+                    '<p><strong>Features:</strong> ' + data.features.length + '</p>' +
+                    '<p><strong>First Feature:</strong></p>' +
+                    '<pre>' + JSON.stringify(data.features[0], null, 2).substring(0, 500) + '...</pre>';
+            })
+            .catch(error => {
+                document.getElementById('status').innerHTML = 'Error: ' + error.message;
+            });
+    </script>
+</body>
+</html>

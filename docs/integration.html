@@ -95,16 +95,16 @@
         </div>
 
         <h1>🗺️ Integration Guide</h1>
-        <p>Wie Sie Bio Ton Kacheln in verschiedene Kartenanwendungen integrieren.</p>
+        <p>Wie Sie Bio Ton Habitat-Daten in verschiedene Kartenanwendungen integrieren.</p>
 
-        <h2 id="tile-url">Tile URL</h2>
+        <h2 id="geojson-url">GeoJSON Daten URL</h2>
         <div class="url-box">
-            https://fkistner85.github.io/Bio_Ton/tiles/{z}/{x}/{y}.png
+            https://fkistner85.github.io/Bio_Ton/bio_ton_data.geojson
         </div>
-        <p>Diese URL können Sie direkt in uMap und andere Kartenanwendungen einfügen.</p>
+        <p>Diese GeoJSON-Datei enthält 64.321 Habitat-Eignungsflächen als Polygone, die Sie in uMap, Leaflet und andere Kartenanwendungen laden können.</p>
 
         <h2 id="umap">Integration mit uMap</h2>
-        <p><a href="https://umap.openstreetmap.fr" target="_blank">umap</a> ist ein Tool zum Erstellen von Karten mit OpenStreetMap-Layern.</p>
+        <p><a href="https://umap.openstreetmap.fr" target="_blank">umap</a> ist ein Tool zum Erstellen von Karten mit OpenStreetMap-Layern und GeoJSON-Daten.</p>
         
         <div class="step">
             <h3>Schritt 1: uMap öffnen</h3>
@@ -116,48 +116,73 @@
         </div>
 
         <div class="step">
-            <h3>Schritt 2: Custom Tile Layer hinzufügen</h3>
+            <h3>Schritt 2: GeoJSON-Daten importieren</h3>
             <ul>
-                <li>Klicken Sie auf das <strong>Ebenen-Symbol</strong> auf der rechten Seite</li>
-                <li>Klicken Sie auf <strong>"Add a remote layer"</strong> oder <strong>"Change tile layers"</strong></li>
-                <li>Wählen Sie <strong>"Custom"</strong> aus dem Dropdown-Menü</li>
-                <li>Geben Sie die Tile URL ein: <code>https://fkistner85.github.io/Bio_Ton/tiles/{z}/{x}/{y}.png</code></li>
-                <li>Setzen Sie einen Namen (z.B. "Bio Ton Tiles")</li>
-                <li>Klicken Sie auf "Speichern"</li>
+                <li>Klicken Sie auf das <strong>Import-Symbol</strong> (↓) auf der rechten Seite</li>
+                <li>Wählen Sie <strong>"From URL"</strong></li>
+                <li>Geben Sie die GeoJSON URL ein: <code>https://fkistner85.github.io/Bio_Ton/bio_ton_data.geojson</code></li>
+                <li>Wählen Sie das Format <strong>"geojson"</strong></li>
+                <li>Klicken Sie auf "Import"</li>
             </ul>
         </div>
 
         <div class="step">
             <h3>Schritt 3: Layer-Einstellungen anpassen</h3>
             <ul>
-                <li>Stellen Sie die Deckkraft ein, wenn der Layer transparent sein soll</li>
-                <li>Wählen Sie, ob es ein Base-Layer oder ein Overlay sein soll</li>
+                <li>Klicken Sie auf die Layer-Einstellungen (Stift-Symbol)</li>
+                <li>Passen Sie Farbe und Transparenz der Polygone an</li>
+                <li>Definieren Sie Popup-Inhalte für die Habitat-Eigenschaften</li>
                 <li>Speichern Sie Ihre Karte</li>
             </ul>
         </div>
 
+        <div class="warning">
+            <strong>⚠️ Hinweis:</strong> Die GeoJSON-Datei ist ca. 79 MB groß und enthält über 64.000 Polygone. Das Laden kann einige Sekunden dauern.
+        </div>
+
         <div class="info">
-            <strong>💡 Tipp:</strong> Sie können mehrere Tile-Layer hinzufügen und in der uMap-Oberfläche zwischen ihnen wechseln.
+            <strong>💡 Tipp:</strong> In uMap können Sie die Daten-Layer mit OpenStreetMap als Hintergrund kombinieren, um die Habitat-Gebiete zu visualisieren.
         </div>
 
         <h2 id="leaflet">Integration mit Leaflet.js</h2>
         <p><a href="https://leafletjs.com" target="_blank">Leaflet</a> ist eine beliebte JavaScript-Bibliothek für interaktive Karten.</p>
 
-        <h3>Basis-Setup</h3>
-        <pre><code>// Karte initialisieren (zentriert auf Süddeutschland)
-var map = L.map('map').setView([48.7758, 9.1829], 13);
+        <h3>Basis-Setup mit GeoJSON</h3>
+        <pre><code>// Karte initialisieren
+var map = L.map('map').setView([49.5, 7.5], 9);
 
 // OpenStreetMap als Basiskarte
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap'
+    attribution: '© OpenStreetMap contributors'
 }).addTo(map);
 
-// Bio Ton Tiles als Overlay
-L.tileLayer('https://fkistner85.github.io/Bio_Ton/tiles/{z}/{x}/{y}.png', {
-    attribution: 'Bio Ton Tiles',
-    maxZoom: 18,
-    opacity: 0.7
-}).addTo(map);</code></pre>
+// Bio Ton GeoJSON-Daten laden
+fetch('https://fkistner85.github.io/Bio_Ton/bio_ton_data.geojson')
+    .then(response => response.json())
+    .then(data => {
+        L.geoJSON(data, {
+            style: {
+                fillColor: '#2ecc71',
+                fillOpacity: 0.4,
+                color: '#27ae60',
+                weight: 1
+            },
+            onEachFeature: function(feature, layer) {
+                if (feature.properties) {
+                    var popup = 'Habitat ID: ' + feature.properties.id;
+                    if (feature.properties.area_m2) {
+                        popup += '<br>Fläche: ' + 
+                                 (feature.properties.area_m2 / 10000).toFixed(2) + ' ha';
+                    }
+                    layer.bindPopup(popup);
+                }
+            }
+        }).addTo(map);
+    });</code></pre>
+
+        <div class="info">
+            <strong>💡 Performance-Tipp:</strong> Bei sehr großen GeoJSON-Dateien wie dieser (64.321 Features) kann das Rendering etwas dauern. Erwägen Sie die Verwendung von Cluster-Plugins oder Vereinfachung der Geometrien für bessere Performance.
+        </div>
 
         <h2>Weitere Ressourcen</h2>
         <ul>
