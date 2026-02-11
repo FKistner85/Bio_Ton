@@ -1,0 +1,18 @@
+# Jekyll configuration for GitHub Pages
+# This ensures proper serving of tile files
+
+# Exclude files from processing
+exclude:
+  - README.md
+  - SETUP.md
+
+# Include all files (including those starting with dots)
+include:
+  - .htaccess
+
+# Plugins
+plugins:
+  - jekyll-relative-links
+
+# Don't use Jekyll for this simple static site
+# GitHub Pages will still serve the files
