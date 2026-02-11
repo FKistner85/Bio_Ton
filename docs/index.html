@@ -121,7 +121,6 @@
     <div class="toast" id="toast"></div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/protomaps-leaflet@4.1.1/dist/protomaps-leaflet.js"></script>
     <script>
         // --- URL hash helpers for shareable links ---
         function getHashParams() {
@@ -192,25 +191,14 @@
         map.on('moveend', updateHash);
         updateHash();
 
-        // --- Load habitat data via PMTiles (vector tiles with HTTP range requests) ---
+        // --- Load habitat data from generated raster tiles ---
         var loadingEl = document.getElementById('loading-indicator');
 
-        var bioTonLayer = protomapsL.leafletLayer({
-            url: 'bio_ton_data.pmtiles',
-            maxDataZoom: 9,
-            paintRules: [
-                {
-                    dataLayer: 'bio_ton_data',
-                    symbolizer: new protomapsL.PolygonSymbolizer({
-                        fill: '#2ecc71',
-                        opacity: 0.4,
-                        stroke: '#27ae60',
-                        width: 1
-                    })
-                }
-            ],
-            labelRules: [],
-            attribution: 'Bio Ton Habitat-Daten'
+        var bioTonLayer = L.tileLayer('tiles/{z}/{x}/{y}.png', {
+            attribution: 'Bio Ton Habitat-Daten',
+            opacity: 0.7,
+            maxZoom: 19,
+            errorTileUrl: ''
         });
 
         bioTonLayer.on('load', function() {
@@ -220,35 +208,7 @@
         bioTonLayer.addTo(map);
 
         document.getElementById('featureCount').innerHTML =
-            '<strong>64.321 Flächen</strong> geladen (Vektorkacheln)';
-
-        // --- Click handling for feature popups ---
-        // queryTileFeaturesDebug is the standard feature query API in protomaps-leaflet v4
-        map.on('click', function(e) {
-            var results = bioTonLayer.queryTileFeaturesDebug(e.latlng.lng, e.latlng.lat, 3);
-            if (results && results.size > 0) {
-                var found = null;
-                results.forEach(function(features) {
-                    if (!found && features.length > 0) {
-                        found = features[0];
-                    }
-                });
-                if (found) {
-                    var props = found.feature.props;
-                    var popupContent = '<strong>Bio Ton Habitat</strong><br>';
-                    if (props.id) {
-                        popupContent += 'ID: ' + props.id + '<br>';
-                    }
-                    if (props.area_m2) {
-                        popupContent += 'Fläche: ' + (props.area_m2 / 10000).toFixed(2) + ' ha';
-                    }
-                    L.popup()
-                        .setLatLng(e.latlng)
-                        .setContent(popupContent)
-                        .openOn(map);
-                }
-            }
-        });
+            '<strong>64.321 Flächen</strong> geladen (Rasterkacheln)';
 
         // Fallback: hide loading indicator after 5s in case the 'load' event does not fire
         setTimeout(function() {

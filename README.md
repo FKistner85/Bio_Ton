@@ -6,7 +6,7 @@ Interaktive Karte zur Visualisierung von Bio_O_Ton Habitat-Eignungsflächen auf 
 
 **[https://fkistner85.github.io/Bio_Ton/](https://fkistner85.github.io/Bio_Ton/)**
 
-Die Karte zeigt 64.321 Habitat-Flächen als GeoJSON-Overlay auf OpenStreetMap. Die aktuelle Kartenansicht (Position und Zoom) wird im URL-Hash gespeichert und kann direkt als Link geteilt werden.
+Die Karte zeigt 64.321 Habitat-Flächen als Rasterkacheln-Overlay auf OpenStreetMap. Die aktuelle Kartenansicht (Position und Zoom) wird im URL-Hash gespeichert und kann direkt als Link geteilt werden.
 
 ## 📦 Daten
 
@@ -27,13 +27,13 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap contributors'
 }).addTo(map);
 
-fetch('https://fkistner85.github.io/Bio_Ton/bio_ton_data.geojson')
-    .then(r => r.json())
-    .then(data => {
-        L.geoJSON(data, {
-            style: { fillColor: '#2ecc71', fillOpacity: 0.4, color: '#27ae60', weight: 1 }
-        }).addTo(map);
-    });
+// Bio Ton Habitat-Kacheln als Overlay laden
+L.tileLayer('https://fkistner85.github.io/Bio_Ton/tiles/{z}/{x}/{y}.png', {
+    attribution: 'Bio Ton Habitat-Daten',
+    opacity: 0.7,
+    maxZoom: 19,
+    errorTileUrl: ''
+}).addTo(map);
 ```
 
 ## 📁 Struktur
