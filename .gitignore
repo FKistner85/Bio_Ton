@@ -1,0 +1,32 @@
+# MBTiles source files (keep tiles extracted, ignore source)
+*.mbtiles
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary files
+*.tmp
+*.bak
+.cache/
+
+# Node modules (if you add any tooling)
+node_modules/
+npm-debug.log*
+
+# Python (if using mbutil or other Python tools)
+__pycache__/
+*.py[cod]
+venv/
+env/
+
+# Build artifacts
+dist/
+build/
