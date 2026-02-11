@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bio Ton - Integration Guide</title>
+    <title>Bio Ton - Integration</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -140,10 +140,6 @@
             <strong>⚠️ Hinweis:</strong> Die GeoJSON-Datei ist ca. 79 MB groß und enthält über 64.000 Polygone. Das Laden kann einige Sekunden dauern.
         </div>
 
-        <div class="info">
-            <strong>💡 Tipp:</strong> In uMap können Sie die Daten-Layer mit OpenStreetMap als Hintergrund kombinieren, um die Habitat-Gebiete zu visualisieren.
-        </div>
-
         <h2 id="leaflet">Integration mit Leaflet.js</h2>
         <p><a href="https://leafletjs.com" target="_blank">Leaflet</a> ist eine beliebte JavaScript-Bibliothek für interaktive Karten.</p>
 
@@ -181,15 +177,8 @@ fetch('https://fkistner85.github.io/Bio_Ton/bio_ton_data.geojson')
     });</code></pre>
 
         <div class="info">
-            <strong>💡 Performance-Tipp:</strong> Bei sehr großen GeoJSON-Dateien wie dieser (64.321 Features) kann das Rendering etwas dauern. Erwägen Sie die Verwendung von Cluster-Plugins oder Vereinfachung der Geometrien für bessere Performance.
+            <strong>💡 Performance-Tipp:</strong> Bei sehr großen GeoJSON-Dateien wie dieser (64.321 Features) kann das Rendering etwas dauern. Verwenden Sie <code>preferCanvas: true</code> beim Erstellen der Karte für bessere Performance.
         </div>
-
-        <h2>Weitere Ressourcen</h2>
-        <ul>
-            <li><a href="https://umap.openstreetmap.fr" target="_blank">umap Website</a></li>
-            <li><a href="https://wiki.openstreetmap.org/wiki/UMap" target="_blank">umap Dokumentation</a></li>
-            <li><a href="https://leafletjs.com/reference.html" target="_blank">Leaflet Dokumentation</a></li>
-        </ul>
 
         <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd;">
             <p><a href="index.html">← Zurück zur Karte</a></p>
