@@ -110,7 +110,7 @@
                                 popupContent += 'ID: ' + feature.properties.id + '<br>';
                             }
                             if (feature.properties.area_m2) {
-                                popupContent += 'Area: ' + (feature.properties.area_m2 / 10000).toFixed(2) + ' ha';
+                                popupContent += 'Fläche: ' + (feature.properties.area_m2 / 10000).toFixed(2) + ' ha';
                             }
                             layer.bindPopup(popupContent);
                         }
