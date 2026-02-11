@@ -13,6 +13,14 @@ This repository hosts a simple tile server using GitHub Pages. It allows you to:
 - Serve tiles that can be integrated into OpenStreetMap/umap
 - Display custom map layers on a web-based viewer
 
+## 📚 Documentation
+
+- **[Quick Start Guide](docs/QUICKSTART.md)** - Get started in 5 minutes
+- **[Setup Instructions](docs/SETUP.md)** - Detailed GitHub Pages setup
+- **[Testing Guide](docs/TESTING.md)** - Verify your installation
+- **[Format Guide](docs/FORMATS.md)** - Choose the right tile format
+- **[Integration Examples](https://fkistner85.github.io/Bio_Ton/integration.html)** - Live code examples
+
 ## 🗺️ Using with umap
 
 To use these tiles in umap:
