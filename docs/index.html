@@ -173,12 +173,13 @@
         var defaultLng = 7.5;
         var defaultZoom = 9;
 
+        var initLat = hashParams ? hashParams.lat : defaultLat;
+        var initLng = hashParams ? hashParams.lng : defaultLng;
+        var initZoom = hashParams ? hashParams.zoom : defaultZoom;
+
         var map = L.map('map', {
             preferCanvas: true  // Canvas renderer for better performance with many features
-        }).setView(
-            [hashParams ? hashParams.lat : defaultLat, hashParams ? hashParams.lng : defaultLng],
-            hashParams ? hashParams.zoom : defaultZoom
-        );
+        }).setView([initLat, initLng], initZoom);
 
         // OpenStreetMap base layer (always available)
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
