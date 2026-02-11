@@ -55,8 +55,8 @@
     <div class="info-panel" id="infoPanel">
         <span class="close-btn" onclick="document.getElementById('infoPanel').style.display='none'">&times;</span>
         <h2>Bio Ton Karte</h2>
-        <p><strong>Tile URL für uMap:</strong></p>
-        <code id="tileUrl">https://fkistner85.github.io/Bio_Ton/tiles/{z}/{x}/{y}.png</code>
+        <p><strong>Habitat-Daten:</strong></p>
+        <p style="font-size: 12px;">Diese Karte zeigt Bio_O_Ton Habitat-Eignungsflächen als GeoJSON-Overlay auf OpenStreetMap.</p>
         <p style="margin-top: 15px;">
             <a href="https://umap.openstreetmap.fr" target="_blank" style="color: #2196F3; text-decoration: none; font-weight: bold;">🗺️ uMap öffnen →</a>
         </p>
@@ -67,8 +67,8 @@
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-        // Initialize the map centered on southern Germany (Stuttgart area)
-        var map = L.map('map').setView([48.7758, 9.1829], 9);
+        // Initialize the map centered on southern Germany (region between Luxembourg and Stuttgart)
+        var map = L.map('map').setView([49.5, 7.5], 9);
 
         // Add OpenStreetMap base layer
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -76,24 +76,68 @@
             maxZoom: 19
         }).addTo(map);
 
-        // Add custom Bio Ton tile overlay
-        L.tileLayer('tiles/{z}/{x}/{y}.png', {
-            attribution: 'Bio Ton Custom Tiles',
-            maxZoom: 18,
-            opacity: 0.7
-        }).addTo(map);
+        // Variable to store the Bio Ton GeoJSON layer
+        var bioTonLayer = null;
 
-        // Add location marker for user's position
+        // Load and display Bio Ton GeoJSON data
+        console.log('Loading Bio Ton habitat data...');
+        fetch('bio_ton_data.geojson')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to load GeoJSON data');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('GeoJSON data loaded successfully');
+                console.log('Number of features:', data.features.length);
+                
+                // Add GeoJSON layer to map with custom styling
+                bioTonLayer = L.geoJSON(data, {
+                    style: function(feature) {
+                        return {
+                            fillColor: '#2ecc71',
+                            fillOpacity: 0.4,
+                            color: '#27ae60',
+                            weight: 1,
+                            opacity: 0.6
+                        };
+                    },
+                    onEachFeature: function(feature, layer) {
+                        if (feature.properties) {
+                            var popupContent = '<strong>Bio Ton Habitat</strong><br>';
+                            if (feature.properties.id) {
+                                popupContent += 'ID: ' + feature.properties.id + '<br>';
+                            }
+                            if (feature.properties.area_m2) {
+                                popupContent += 'Fläche: ' + (feature.properties.area_m2 / 10000).toFixed(2) + ' ha';
+                            }
+                            layer.bindPopup(popupContent);
+                        }
+                    }
+                }).addTo(map);
+                
+                // Fit map to show all features
+                if (data.features && data.features.length > 0) {
+                    map.fitBounds(bioTonLayer.getBounds());
+                }
+                
+                console.log('Bio Ton habitat layer added to map');
+            })
+            .catch(error => {
+                console.error('Error loading GeoJSON:', error);
+                alert('Failed to load Bio Ton habitat data. Please check the console for details.');
+            });
+
+        
+        // Add location marker for user's position (optional)
         var userMarker;
-
-        // Try to get user's location and center map on it
+        
+        // Try to get user's location and add a marker
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function(position) {
                 var userLat = position.coords.latitude;
                 var userLon = position.coords.longitude;
-                
-                // Center map on user's location
-                map.setView([userLat, userLon], 13);
                 
                 // Add marker for user's position
                 userMarker = L.marker([userLat, userLon], {
@@ -110,15 +154,6 @@
                     .openPopup();
             }, function(error) {
                 console.log('Geolocation error: ' + error.message);
-                // Show user-friendly message in the info panel
-                var infoPanel = document.getElementById('infoPanel');
-                if (infoPanel) {
-                    var errorMsg = document.createElement('p');
-                    errorMsg.style.color = '#d63384';
-                    errorMsg.style.fontSize = '12px';
-                    errorMsg.textContent = '📍 Standort konnte nicht ermittelt werden. Karte ist auf Süddeutschland zentriert.';
-                    infoPanel.appendChild(errorMsg);
-                }
             }, {
                 enableHighAccuracy: true,
                 timeout: 5000,
