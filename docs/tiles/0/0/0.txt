@@ -1,5 +1,0 @@
-Sample tile placeholder - Replace with actual PNG tiles extracted from your MBTiles file.
-
-This file demonstrates the directory structure: tiles/{z}/{x}/{y}.png
-
-For zoom level 0, x=0, y=0, this would be: tiles/0/0/0.png

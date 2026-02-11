@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bio Ton - MBTiles Map Viewer</title>
+    <title>Bio_O_Ton - Habitat Suitability Map</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         body {
@@ -54,16 +54,12 @@
     <div id="map"></div>
     <div class="info-panel" id="infoPanel">
         <span class="close-btn" onclick="document.getElementById('infoPanel').style.display='none'">&times;</span>
-        <h2>Bio Ton Tile Server</h2>
-        <p>This page demonstrates hosting tiles for OpenStreetMap/umap integration.</p>
-        <p><strong>Tile URL Pattern:</strong></p>
-        <code id="tileUrl">https://fkistner85.github.io/Bio_Ton/tiles/{z}/{x}/{y}.png</code>
-        <p><strong>Usage in umap:</strong></p>
-        <p style="font-size: 12px;">
-            1. Open umap editor<br>
-            2. Click on "Change tile layers"<br>
-            3. Add custom layer with the URL above<br>
-            4. Adjust attribution if needed
+        <h2>Bio_O_Ton Habitat Map</h2>
+        <p>Displaying habitat suitability areas for the Bio_O_Ton project.</p>
+        <p><strong>Data:</strong> Bio_O_Ton Habitat (64,321 features)</p>
+        <p><strong>Attribution:</strong> BIO_TON Project 2025</p>
+        <p style="font-size: 12px; margin-top: 10px;">
+            Click on any habitat area to see details.
         </p>
         <p style="margin-top: 15px;">
             <a href="integration.html" style="color: #2196F3; text-decoration: none; font-weight: bold;">📖 View Full Integration Guide →</a>
@@ -71,9 +67,10 @@
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/pako@2.1.0/dist/pako.min.js"></script>
     <script>
-        // Initialize the map
-        var map = L.map('map').setView([51.505, -0.09], 13);
+        // Initialize the map centered on Saarland, Germany (Bio_O_Ton area)
+        var map = L.map('map').setView([49.47, 6.5], 11);
 
         // Add OpenStreetMap base layer
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -81,19 +78,53 @@
             maxZoom: 19
         }).addTo(map);
 
-        // Example: Add custom tile overlay (uncomment and adjust when you have tiles)
-        /*
-        L.tileLayer('tiles/{z}/{x}/{y}.png', {
-            attribution: 'Bio Ton Custom Tiles',
-            maxZoom: 18,
-            opacity: 0.7
-        }).addTo(map);
-        */
-
-        // Add a marker as example
-        L.marker([51.505, -0.09]).addTo(map)
-            .bindPopup('Bio Ton Map Viewer<br>Place your MBTiles here!')
-            .openPopup();
+        // Load and display Bio_O_Ton GeoJSON data
+        console.log('Loading Bio_O_Ton habitat data...');
+        
+        fetch('bio_o_ton_data.geojson.gz')
+            .then(response => response.arrayBuffer())
+            .then(buffer => {
+                // Decompress gzip data
+                const decompressed = pako.ungzip(new Uint8Array(buffer), { to: 'string' });
+                return JSON.parse(decompressed);
+            })
+            .then(geojsonData => {
+                console.log(`Loaded ${geojsonData.features.length} habitat features`);
+                
+                // Add GeoJSON layer with custom styling
+                var habitatLayer = L.geoJSON(geojsonData, {
+                    style: function(feature) {
+                        return {
+                            fillColor: '#2E7D32',
+                            weight: 1,
+                            opacity: 0.8,
+                            color: '#1B5E20',
+                            fillOpacity: 0.5
+                        };
+                    },
+                    onEachFeature: function(feature, layer) {
+                        if (feature.properties) {
+                            // Create popup content from properties
+                            let popupContent = '<strong>Bio_O_Ton Habitat</strong><br>';
+                            for (let key in feature.properties) {
+                                if (feature.properties[key] !== null && feature.properties[key] !== '') {
+                                    popupContent += `<b>${key}:</b> ${feature.properties[key]}<br>`;
+                                }
+                            }
+                            layer.bindPopup(popupContent);
+                        }
+                    }
+                }).addTo(map);
+                
+                // Fit map to data bounds
+                map.fitBounds(habitatLayer.getBounds());
+                
+                console.log('Bio_O_Ton habitat data loaded successfully');
+            })
+            .catch(error => {
+                console.error('Error loading habitat data:', error);
+                alert('Error loading Bio_O_Ton habitat data. Check console for details.');
+            });
     </script>
 </body>
 </html>
