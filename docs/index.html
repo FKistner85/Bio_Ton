@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bio Ton - MBTiles Map Viewer</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        #map {
+            width: 100%;
+            height: 100vh;
+        }
+        .info-panel {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            z-index: 1000;
+            max-width: 300px;
+        }
+        .info-panel h2 {
+            margin: 0 0 10px 0;
+            font-size: 18px;
+        }
+        .info-panel p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+        .info-panel code {
+            background: #f4f4f4;
+            padding: 2px 4px;
+            border-radius: 3px;
+            display: block;
+            margin: 5px 0;
+            word-wrap: break-word;
+        }
+        .close-btn {
+            float: right;
+            cursor: pointer;
+            font-size: 20px;
+            line-height: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <div class="info-panel" id="infoPanel">
+        <span class="close-btn" onclick="document.getElementById('infoPanel').style.display='none'">&times;</span>
+        <h2>Bio Ton Tile Server</h2>
+        <p>This page demonstrates hosting tiles for OpenStreetMap/umap integration.</p>
+        <p><strong>Tile URL Pattern:</strong></p>
+        <code id="tileUrl">https://fkistner85.github.io/Bio_Ton/tiles/{z}/{x}/{y}.png</code>
+        <p><strong>Usage in umap:</strong></p>
+        <p style="font-size: 12px;">
+            1. Open umap editor<br>
+            2. Click on "Change tile layers"<br>
+            3. Add custom layer with the URL above<br>
+            4. Adjust attribution if needed
+        </p>
+        <p style="margin-top: 15px;">
+            <a href="integration.html" style="color: #2196F3; text-decoration: none; font-weight: bold;">📖 View Full Integration Guide →</a>
+        </p>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Initialize the map
+        var map = L.map('map').setView([51.505, -0.09], 13);
+
+        // Add OpenStreetMap base layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 19
+        }).addTo(map);
+
+        // Example: Add custom tile overlay (uncomment and adjust when you have tiles)
+        /*
+        L.tileLayer('tiles/{z}/{x}/{y}.png', {
+            attribution: 'Bio Ton Custom Tiles',
+            maxZoom: 18,
+            opacity: 0.7
+        }).addTo(map);
+        */
+
+        // Add a marker as example
+        L.marker([51.505, -0.09]).addTo(map)
+            .bindPopup('Bio Ton Map Viewer<br>Place your MBTiles here!')
+            .openPopup();
+    </script>
+</body>
+</html>

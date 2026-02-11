@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bio Ton - Integration Guide</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #4CAF50;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #666;
+        }
+        pre {
+            background: #f4f4f4;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            overflow-x: auto;
+        }
+        code {
+            font-family: 'Courier New', Courier, monospace;
+            color: #d63384;
+        }
+        .url-box {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: monospace;
+            word-wrap: break-word;
+        }
+        .step {
+            background: #f9f9f9;
+            border-left: 4px solid #4CAF50;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .nav {
+            background: #333;
+            padding: 10px;
+            margin: -30px -30px 30px -30px;
+            border-radius: 8px 8px 0 0;
+        }
+        .nav a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 15px;
+            display: inline-block;
+        }
+        .nav a:hover {
+            background: #555;
+            border-radius: 4px;
+        }
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .info {
+            background: #d1ecf1;
+            border-left: 4px solid #0dcaf0;
+            padding: 15px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="nav">
+            <a href="index.html">← Back to Map Viewer</a>
+            <a href="#umap">umap</a>
+            <a href="#leaflet">Leaflet</a>
+            <a href="#openlayers">OpenLayers</a>
+        </div>
+
+        <h1>🗺️ Integration Guide</h1>
+        <p>Learn how to integrate Bio Ton tiles into various mapping platforms and libraries.</p>
+
+        <h2 id="tile-url">Tile URL</h2>
+        <div class="url-box">
+            https://fkistner85.github.io/Bio_Ton/tiles/{z}/{x}/{y}.png
+        </div>
+        <p>Replace <code>{z}</code>, <code>{x}</code>, and <code>{y}</code> with zoom level, x-coordinate, and y-coordinate respectively.</p>
+
+        <h2 id="umap">Integration with umap</h2>
+        <p><a href="https://umap.openstreetmap.fr" target="_blank">umap</a> is a tool to create maps with OpenStreetMap layers and embed them in your site.</p>
+        
+        <div class="step">
+            <h3>Step 1: Create or Open a Map</h3>
+            <ul>
+                <li>Go to <a href="https://umap.openstreetmap.fr" target="_blank">umap.openstreetmap.fr</a></li>
+                <li>Sign in with your OpenStreetMap account</li>
+                <li>Click "Create a map" or open an existing map</li>
+            </ul>
+        </div>
+
+        <div class="step">
+            <h3>Step 2: Add Custom Tile Layer</h3>
+            <ul>
+                <li>Click the <strong>layers icon</strong> on the right side</li>
+                <li>Click on <strong>"Add a remote layer"</strong> or <strong>"Change tile layers"</strong></li>
+                <li>Select <strong>"Custom"</strong> from the dropdown</li>
+                <li>Enter the tile URL: <code>https://fkistner85.github.io/Bio_Ton/tiles/{z}/{x}/{y}.png</code></li>
+                <li>Set the name (e.g., "Bio Ton Tiles")</li>
+                <li>Set attribution if required</li>
+                <li>Click "Save"</li>
+            </ul>
+        </div>
+
+        <div class="step">
+            <h3>Step 3: Adjust Layer Settings</h3>
+            <ul>
+                <li>Set opacity if you want the layer to be transparent</li>
+                <li>Choose whether it should be a base layer or overlay</li>
+                <li>Save your map</li>
+            </ul>
+        </div>
+
+        <div class="info">
+            <strong>💡 Tip:</strong> You can add multiple tile layers and switch between them in the umap interface.
+        </div>
+
+        <h2 id="leaflet">Integration with Leaflet.js</h2>
+        <p><a href="https://leafletjs.com" target="_blank">Leaflet</a> is a popular open-source JavaScript library for interactive maps.</p>
+
+        <h3>Basic Setup</h3>
+        <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" /&gt;
+    &lt;script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"&gt;&lt;/script&gt;
+    &lt;style&gt;
+        #map { height: 600px; }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div id="map"&gt;&lt;/div&gt;
+    &lt;script&gt;
+        var map = L.map('map').setView([51.505, -0.09], 13);
+        
+        // Add Bio Ton tiles
+        L.tileLayer('https://fkistner85.github.io/Bio_Ton/tiles/{z}/{x}/{y}.png', {
+            attribution: 'Bio Ton Tiles',
+            maxZoom: 18,
+            minZoom: 0
+        }).addTo(map);
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+        <h3>As an Overlay Layer</h3>
+        <pre><code>// Base layer (OpenStreetMap)
+var baseLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors'
+}).addTo(map);
+
+// Overlay layer (Bio Ton tiles with transparency)
+var overlayLayer = L.tileLayer('https://fkistner85.github.io/Bio_Ton/tiles/{z}/{x}/{y}.png', {
+    attribution: 'Bio Ton Tiles',
+    opacity: 0.7
+}).addTo(map);
+
+// Add layer control
+L.control.layers(
+    { "OpenStreetMap": baseLayer },
+    { "Bio Ton Overlay": overlayLayer }
+).addTo(map);</code></pre>
+
+        <h2 id="openlayers">Integration with OpenLayers</h2>
+        <p><a href="https://openlayers.org" target="_blank">OpenLayers</a> is a high-performance, feature-packed library for creating interactive maps.</p>
+
+        <h3>Basic Setup</h3>
+        <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v7.3.0/ol.css"&gt;
+    &lt;script src="https://cdn.jsdelivr.net/npm/ol@v7.3.0/dist/ol.js"&gt;&lt;/script&gt;
+    &lt;style&gt;
+        #map { width: 100%; height: 600px; }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div id="map"&gt;&lt;/div&gt;
+    &lt;script&gt;
+        var map = new ol.Map({
+            target: 'map',
+            layers: [
+                new ol.layer.Tile({
+                    source: new ol.source.XYZ({
+                        url: 'https://fkistner85.github.io/Bio_Ton/tiles/{z}/{x}/{y}.png',
+                        maxZoom: 18
+                    })
+                })
+            ],
+            view: new ol.View({
+                center: ol.proj.fromLonLat([-0.09, 51.505]),
+                zoom: 13
+            })
+        });
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+        <h2>QGIS Integration</h2>
+        <p>You can also use these tiles in QGIS desktop application:</p>
+        <div class="step">
+            <ol>
+                <li>Open QGIS</li>
+                <li>Go to <strong>Layer → Add Layer → Add XYZ Layer</strong></li>
+                <li>Create a new connection with these settings:
+                    <ul>
+                        <li>Name: Bio Ton Tiles</li>
+                        <li>URL: <code>https://fkistner85.github.io/Bio_Ton/tiles/{z}/{x}/{y}.png</code></li>
+                        <li>Min Zoom: 0</li>
+                        <li>Max Zoom: 18</li>
+                    </ul>
+                </li>
+                <li>Click OK and add the layer to your map</li>
+            </ol>
+        </div>
+
+        <h2>Troubleshooting</h2>
+        
+        <div class="warning">
+            <strong>⚠️ Common Issues:</strong>
+            <ul>
+                <li><strong>Tiles not loading:</strong> Ensure tiles are properly extracted and committed to the repository</li>
+                <li><strong>404 Errors:</strong> Verify the tile path structure matches {z}/{x}/{y}.png</li>
+                <li><strong>CORS Errors:</strong> GitHub Pages should handle CORS automatically. Check browser console for details.</li>
+                <li><strong>Blank tiles:</strong> Make sure your zoom level is within the range of available tiles</li>
+            </ul>
+        </div>
+
+        <h2>Attribution Requirements</h2>
+        <div class="info">
+            <p>If your tiles are based on OpenStreetMap data or other sources, ensure proper attribution:</p>
+            <pre><code>attribution: '© OpenStreetMap contributors | Bio Ton Data'</code></pre>
+        </div>
+
+        <h2>Additional Resources</h2>
+        <ul>
+            <li><a href="https://wiki.openstreetmap.org/wiki/Tiles" target="_blank">OpenStreetMap Tile Documentation</a></li>
+            <li><a href="https://leafletjs.com/reference.html" target="_blank">Leaflet Documentation</a></li>
+            <li><a href="https://openlayers.org/en/latest/apidoc/" target="_blank">OpenLayers API Documentation</a></li>
+            <li><a href="https://wiki.openstreetmap.org/wiki/UMap" target="_blank">umap Documentation</a></li>
+        </ul>
+
+        <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd;">
+            <p><a href="index.html">← Back to Map Viewer</a></p>
+        </div>
+    </div>
+</body>
+</html>
