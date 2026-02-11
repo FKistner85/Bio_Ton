@@ -223,6 +223,7 @@
             '<strong>64.321 Flächen</strong> geladen (Vektorkacheln)';
 
         // --- Click handling for feature popups ---
+        // queryTileFeaturesDebug is the standard feature query API in protomaps-leaflet v4
         map.on('click', function(e) {
             var results = bioTonLayer.queryTileFeaturesDebug(e.latlng.lng, e.latlng.lat, 3);
             if (results && results.size > 0) {
@@ -249,7 +250,7 @@
             }
         });
 
-        // Hide loading indicator after a timeout as fallback
+        // Fallback: hide loading indicator after 5s in case the 'load' event does not fire
         setTimeout(function() {
             loadingEl.style.display = 'none';
         }, 5000);
