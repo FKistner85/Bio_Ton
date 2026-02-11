@@ -1,17 +1,20 @@
 # Bio_Ton
 
-A GitHub Pages-based tile server for hosting and serving MBTiles for use with OpenStreetMap, umap, and other mapping applications.
+A GitHub Pages-based map viewer displaying Bio_O_Ton habitat suitability areas in the Saarland region of Germany.
 
 ## 🚀 Live Demo
 
-Visit the map viewer: [https://fkistner85.github.io/Bio_Ton/](https://fkistner85.github.io/Bio_Ton/)
+Visit the interactive map: [https://fkistner85.github.io/Bio_Ton/](https://fkistner85.github.io/Bio_Ton/)
+
+The map displays **64,321 habitat features** from the Bio_O_Ton project, showing habitat suitability areas in an interactive Leaflet map.
 
 ## 📖 What is This?
 
-This repository hosts a simple tile server using GitHub Pages. It allows you to:
-- Host map tiles extracted from MBTiles files
-- Serve tiles that can be integrated into OpenStreetMap/umap
-- Display custom map layers on a web-based viewer
+This repository hosts an interactive map viewer for the Bio_O_Ton project. Features:
+- Display habitat suitability areas extracted from MBTiles
+- Interactive map with clickable habitat features  
+- Centered on Saarland, Germany (coordinates: 49.47°N, 6.5°E)
+- GeoJSON overlay on OpenStreetMap base layer
 
 ## 📚 Documentation
 
