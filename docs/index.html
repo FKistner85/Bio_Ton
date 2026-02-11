@@ -106,7 +106,7 @@
     <div id="map"></div>
     <div id="loading-indicator">
         <div class="spinner"></div>
-        Habitat-Daten werden geladen…
+        Karte wird geladen…
     </div>
     <div class="info-panel" id="infoPanel">
         <span class="close-btn" onclick="document.getElementById('infoPanel').style.display='none'">&times;</span>
@@ -121,6 +121,7 @@
     <div class="toast" id="toast"></div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/protomaps-leaflet@4.1.1/dist/protomaps-leaflet.js"></script>
     <script>
         // --- URL hash helpers for shareable links ---
         function getHashParams() {
@@ -178,10 +179,10 @@
         var initZoom = hashParams ? hashParams.zoom : defaultZoom;
 
         var map = L.map('map', {
-            preferCanvas: true  // Canvas renderer for better performance with many features
+            preferCanvas: true
         }).setView([initLat, initLng], initZoom);
 
-        // OpenStreetMap base layer (always available)
+        // OpenStreetMap base layer
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
             maxZoom: 19
@@ -191,58 +192,67 @@
         map.on('moveend', updateHash);
         updateHash();
 
-        // --- Load GeoJSON data ---
-        var bioTonLayer = null;
+        // --- Load habitat data via PMTiles (vector tiles with HTTP range requests) ---
         var loadingEl = document.getElementById('loading-indicator');
 
-        fetch('bio_ton_data.geojson')
-            .then(function(response) {
-                if (!response.ok) {
-                    throw new Error('HTTP ' + response.status);
+        var bioTonLayer = protomapsL.leafletLayer({
+            url: 'bio_ton_data.pmtiles',
+            maxDataZoom: 9,
+            paintRules: [
+                {
+                    dataLayer: 'bio_ton_data',
+                    symbolizer: new protomapsL.PolygonSymbolizer({
+                        fill: '#2ecc71',
+                        opacity: 0.4,
+                        stroke: '#27ae60',
+                        width: 1
+                    })
                 }
-                return response.json();
-            })
-            .then(function(data) {
-                loadingEl.style.display = 'none';
+            ],
+            labelRules: [],
+            attribution: 'Bio Ton Habitat-Daten'
+        });
 
-                bioTonLayer = L.geoJSON(data, {
-                    style: function() {
-                        return {
-                            fillColor: '#2ecc71',
-                            fillOpacity: 0.4,
-                            color: '#27ae60',
-                            weight: 1,
-                            opacity: 0.6
-                        };
-                    },
-                    onEachFeature: function(feature, layer) {
-                        if (feature.properties) {
-                            var popupContent = '<strong>Bio Ton Habitat</strong><br>';
-                            if (feature.properties.id) {
-                                popupContent += 'ID: ' + feature.properties.id + '<br>';
-                            }
-                            if (feature.properties.area_m2) {
-                                popupContent += 'Fläche: ' + (feature.properties.area_m2 / 10000).toFixed(2) + ' ha';
-                            }
-                            layer.bindPopup(popupContent);
-                        }
+        bioTonLayer.on('load', function() {
+            loadingEl.style.display = 'none';
+        });
+
+        bioTonLayer.addTo(map);
+
+        document.getElementById('featureCount').innerHTML =
+            '<strong>64.321 Flächen</strong> geladen (Vektorkacheln)';
+
+        // --- Click handling for feature popups ---
+        map.on('click', function(e) {
+            var results = bioTonLayer.queryTileFeaturesDebug(e.latlng.lng, e.latlng.lat, 3);
+            if (results && results.size > 0) {
+                var found = null;
+                results.forEach(function(features) {
+                    if (!found && features.length > 0) {
+                        found = features[0];
                     }
-                }).addTo(map);
-
-                // Only fit bounds if no hash params were provided
-                if (!hashParams && data.features && data.features.length > 0) {
-                    map.fitBounds(bioTonLayer.getBounds());
+                });
+                if (found) {
+                    var props = found.feature.props;
+                    var popupContent = '<strong>Bio Ton Habitat</strong><br>';
+                    if (props.id) {
+                        popupContent += 'ID: ' + props.id + '<br>';
+                    }
+                    if (props.area_m2) {
+                        popupContent += 'Fläche: ' + (props.area_m2 / 10000).toFixed(2) + ' ha';
+                    }
+                    L.popup()
+                        .setLatLng(e.latlng)
+                        .setContent(popupContent)
+                        .openOn(map);
                 }
+            }
+        });
 
-                var count = data.features ? data.features.length : 0;
-                document.getElementById('featureCount').innerHTML =
-                    '<strong>' + count.toLocaleString('de-DE') + ' Flächen</strong> geladen';
-            })
-            .catch(function(error) {
-                loadingEl.style.display = 'none';
-                console.error('Error loading GeoJSON:', error);
-                showToast('Habitat-Daten konnten nicht geladen werden.', 5000);
-            });
+        // Hide loading indicator after a timeout as fallback
+        setTimeout(function() {
+            loadingEl.style.display = 'none';
+        }, 5000);
 
         // --- User location marker ---
         if (navigator.geolocation) {

@@ -92,6 +92,7 @@
             <a href="index.html">← Zurück zur Karte</a>
             <a href="#umap">umap</a>
             <a href="#leaflet">Leaflet</a>
+            <a href="#pmtiles">PMTiles</a>
         </div>
 
         <h1>🗺️ Integration Guide</h1>
@@ -179,6 +180,42 @@ fetch('https://fkistner85.github.io/Bio_Ton/bio_ton_data.geojson')
         <div class="info">
             <strong>💡 Performance-Tipp:</strong> Bei sehr großen GeoJSON-Dateien wie dieser (64.321 Features) kann das Rendering etwas dauern. Verwenden Sie <code>preferCanvas: true</code> beim Erstellen der Karte für bessere Performance.
         </div>
+
+        <h2 id="pmtiles">PMTiles (Empfohlene Methode)</h2>
+        <p>Die Hauptkarte verwendet <a href="https://docs.protomaps.com/pmtiles/" target="_blank">PMTiles</a> – ein einzelnes Dateiformat für Vektor-Kacheln, das HTTP Range Requests unterstützt. Es lädt nur die Kacheln, die für den aktuellen Kartenausschnitt benötigt werden.</p>
+
+        <div class="url-box">
+            https://fkistner85.github.io/Bio_Ton/bio_ton_data.pmtiles
+        </div>
+
+        <div class="info">
+            <strong>💡 Vorteil:</strong> Die PMTiles-Datei ist nur ca. 11 MB groß (statt 79 MB GeoJSON) und es werden nur die Kacheln geladen, die im aktuellen Kartenausschnitt sichtbar sind. Das ist ideal für statisches Hosting wie GitHub Pages.
+        </div>
+
+        <h3>PMTiles mit Leaflet und protomaps-leaflet</h3>
+        <pre><code>// protomaps-leaflet einbinden (enthält PMTiles-Unterstützung)
+// &lt;script src="https://unpkg.com/protomaps-leaflet@4.1.1/dist/protomaps-leaflet.js"&gt;&lt;/script&gt;
+
+var map = L.map('map').setView([49.5, 7.5], 9);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors'
+}).addTo(map);
+
+var habitatLayer = protomapsL.leafletLayer({
+    url: 'https://fkistner85.github.io/Bio_Ton/bio_ton_data.pmtiles',
+    paintRules: [{
+        dataLayer: 'bio_ton_data',
+        symbolizer: new protomapsL.PolygonSymbolizer({
+            fill: '#2ecc71',
+            opacity: 0.4,
+            stroke: '#27ae60',
+            width: 1
+        })
+    }],
+    labelRules: []
+});
+habitatLayer.addTo(map);</code></pre>
 
         <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd;">
             <p><a href="index.html">← Zurück zur Karte</a></p>
