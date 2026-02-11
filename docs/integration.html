@@ -144,8 +144,15 @@
         <p><a href="https://leafletjs.com" target="_blank">Leaflet</a> ist eine beliebte JavaScript-Bibliothek für interaktive Karten.</p>
 
         <h3>Basis-Setup</h3>
-        <pre><code>var map = L.map('map').setView([48.7758, 9.1829], 13);
+        <pre><code>// Karte initialisieren (zentriert auf Süddeutschland)
+var map = L.map('map').setView([48.7758, 9.1829], 13);
 
+// OpenStreetMap als Basiskarte
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap'
+}).addTo(map);
+
+// Bio Ton Tiles als Overlay
 L.tileLayer('https://fkistner85.github.io/Bio_Ton/tiles/{z}/{x}/{y}.png', {
     attribution: 'Bio Ton Tiles',
     maxZoom: 18,

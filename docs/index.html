@@ -110,6 +110,15 @@
                     .openPopup();
             }, function(error) {
                 console.log('Geolocation error: ' + error.message);
+                // Show user-friendly message in the info panel
+                var infoPanel = document.getElementById('infoPanel');
+                if (infoPanel) {
+                    var errorMsg = document.createElement('p');
+                    errorMsg.style.color = '#d63384';
+                    errorMsg.style.fontSize = '12px';
+                    errorMsg.textContent = '📍 Standort konnte nicht ermittelt werden. Karte ist auf Süddeutschland zentriert.';
+                    infoPanel.appendChild(errorMsg);
+                }
             }, {
                 enableHighAccuracy: true,
                 timeout: 5000,
